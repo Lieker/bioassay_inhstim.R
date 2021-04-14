@@ -13,7 +13,7 @@ hatch_raw <- function(hatch_raw = "input/hatching_raw.csv") {
   raw0 <- filter(raw, t == 0) 
   
   #combine the t=0 timepoints with all other timepoints
-  raw <- left_join(raw, raw0, by = c("well", "treatment","species","REtype", "date"), copy = FALSE, suffix=c("", "_t0")) %>% dplyr::filter(t!=0) 
+  raw <- left_join(raw, raw0, by = c("well", "treatment"), copy = FALSE, suffix=c("", "_t0")) %>% dplyr::filter(t!=0) 
   raw_h <- subset(raw, 
                 select = -c(eggs,
                             t_t0))
