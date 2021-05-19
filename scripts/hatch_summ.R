@@ -5,13 +5,11 @@ library(tidyverse)
 library(dplyr)
 library(plotrix)
 
-setwd("C:/Users/levla/github/bioassay.R")
-
-
-hatch_summ <- function(dpi = "all") {
+hatch_summ <- function(dpi = "all",
+                       input = "input/hatching_raw.csv") {
   source("scripts/hatch_calc.R")
   
-  summ <- hatch_calc(dpi = dpi)
+  summ <- hatch_calc(dpi = dpi, input = input)
 
   summ <- summ %>% group_by(treatment) %>%
     summarize(mean_hatch = mean(hatchingpercent),

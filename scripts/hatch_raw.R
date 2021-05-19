@@ -5,8 +5,8 @@ library(tidyverse)
 library(dplyr)
 library(plotrix)
 
-hatch_raw <- function(hatch_raw = "input/hatching_raw.csv") {
-  raw <- read.csv(hatch_raw, sep=',', header = TRUE)
+hatch_raw <- function(input = "input/hatching_raw.csv") {
+  raw <- read.csv(input, sep=',', header = TRUE)
   names(raw)[1] <- "well"
   
   #only take data points at t=0 for normalization
