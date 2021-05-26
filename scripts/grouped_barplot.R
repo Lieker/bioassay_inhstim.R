@@ -10,7 +10,8 @@ grouped_barplot <- function(dpi = "all",
                             height = 100,
                             method = "hsol",
                             input = "input/hatching_raw.csv",
-                            species = "G. rostochiensis"
+                            species = "G. rostochiensis",
+                            ordr
 ) {
   source("scripts/hatch_calc.R")
   source("scripts/hatch_summ.R")
@@ -35,10 +36,12 @@ grouped_barplot <- function(dpi = "all",
       title <- "Inhibition of low-solA-PRD-induced hatching of G. pallida eggs"
       
     } else if (method == "solA") {
-      c <- c[grep("solA5", c$treatment), ]
+      c <- c[grep("solA", c$treatment), ]
       c <- rbind(c, wc)
-      s <- s[grep("solA5", s$treatment), ]
+      s <- s[grep("solA", s$treatment), ]
       s <- rbind(s, ws)
+      s$treatment <- factor(s$treatment, levels = ordr, ordered = TRUE)
+      s <- s[order(s$treatment),]
       title <- "Inhibition of solA-induced hatching of G. pallida eggs"
     }
   } else if(species == "G. rostochiensis"){
@@ -92,3 +95,4 @@ grouped_barplot <- function(dpi = "all",
   return(b)
   
 }
+
