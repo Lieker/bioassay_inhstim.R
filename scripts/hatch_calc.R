@@ -1,11 +1,3 @@
-library(ggpmisc)
-library(extrafont)
-library(ggplot2)
-library(tidyverse)
-library(dplyr)
-library(plotrix)
-
-
 
 hatch_calc <- function(input = "input/hatching_raw.csv",
                        dpi = "all") {

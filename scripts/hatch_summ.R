@@ -1,10 +1,3 @@
-library(ggpmisc)
-library(extrafont)
-library(ggplot2)
-library(tidyverse)
-library(dplyr)
-library(plotrix)
-
 hatch_summ <- function(dpi = "all",
                        input = "input/hatching_raw.csv") {
   source("scripts/hatch_calc.R")
