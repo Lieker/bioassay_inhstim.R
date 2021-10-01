@@ -1,0 +1,251 @@
+---
+title: "Figure 3 (old)"
+author: "Lieke Vlaar"
+date: "01/10/2021"
+output: html_document
+---
+
+Initiate the necessary libraries:
+
+```{r, message = FALSE, warning = FALSE}
+library(ggpmisc)
+library(extrafont)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(plotrix)
+```
+
+Load the necessary functions:
+
+```{r, message = FALSE, warning = FALSE}
+source("scripts/hatch_calc.R")
+source("scripts/hatch_summ.R")
+```
+
+Make a plot for figure A (solanoeclepin A inhibition in Gros)
+
+```{r figA, fig.width = 3, fig.height = 5, message = FALSE, warning = FALSE}
+h_c1 <- hatch_calc(input = "input/fig1_sola_rawdata.csv")
+h_s1 <- hatch_summ(input = "input/fig1_sola_rawdata.csv")
+
+h_c1$treatment <- factor(h_c1$treatment, levels = c("solA5",
+                                                    "atrop2.5",
+                                                    "Ly500",
+                                                    "Akt50",
+                                                    "ketoc100",
+                                                    "dafa50"), ordered = TRUE)
+h_c1 <- h_c1[order(h_c1$treatment),]
+h_s1$treatment <- factor(h_s1$treatment, levels = c("solA5",
+                                                    "atrop2.5",
+                                                    "Ly500",
+                                                    "Akt50",
+                                                    "ketoc100",
+                                                    "dafa50"), ordered = TRUE)
+h_s1 <- h_s1[order(h_s1$treatment),]
+
+
+p1 <- ggplot(data = h_s1, aes(x = treatment, y = mean_hatch)) +
+  geom_bar(position = "dodge",
+           stat = "identity",
+           color = "black",
+           fill = "lightgrey") +
+  geom_errorbar(aes(x = treatment,
+                    y = mean_hatch,
+                    ymin = mean_hatch - sterr,
+                    ymax = mean_hatch + sterr),
+                position = position_dodge(width = .9), width = 0.2) + 
+  geom_jitter(data = h_c1,
+              aes(x = treatment,
+                  y = hatchingpercent),
+              position = position_dodge(width = .9)) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 15),
+        legend.text.align = 0,
+        text = element_text(size = 15),
+        axis.text.x = element_text(size = 8,
+                                   angle = 45,
+                                   hjust = 1)) +
+  labs(y = "% hatch", x = "") +
+  scale_y_continuous(limits = c(-5.5, 65), breaks = seq(0, 100, by = 10)) +
+  scale_x_discrete(labels = c("solA 5 nM", 
+                              "solA + atropine 2.5 mM",
+                              "solA + LY294002 500\U03BCM",
+                              "solA + Akt inhibitor IV 50 \U03BCM",
+                              "solA + ketoconazole 100 \U03BCM",
+                              "solA + dafadine 50 \U03BCM"))
+p1
+```
+
+Make a plot for figure B
+
+```{r figB, fig.width = 3, fig.height = 5, message = FALSE, warning = FALSE}
+h_c2 <- hatch_calc(input = "input/fig2A_TRDlsolA_rawdata.csv")
+h_s2 <- hatch_summ(input = "input/fig2A_TRDlsolA_rawdata.csv")
+
+h_c2$treatment <- factor(h_c2$treatment, levels = c("TRD_lsolA",
+                                                    "atrop2.5",
+                                                    "Ly500",
+                                                    "Akt50",
+                                                    "ketoc100",
+                                                    "dafa50"), ordered = TRUE)
+h_c2 <- h_c2[order(h_c2$treatment),]
+h_s2$treatment <- factor(h_s2$treatment, levels = c("TRD_lsolA",
+                                                    "atrop2.5",
+                                                    "Ly500",
+                                                    "Akt50",
+                                                    "ketoc100",
+                                                    "dafa50"), ordered = TRUE)
+h_s2 <- h_s2[order(h_s2$treatment),]
+
+
+p2 <- ggplot(data = h_s2, aes(x = treatment, y = mean_hatch)) +
+  geom_bar(position = "dodge",
+           stat = "identity",
+           color = "black",
+           fill = "lightgrey") +
+  geom_errorbar(aes(x = treatment,
+                    y = mean_hatch,
+                    ymin = mean_hatch - sterr,
+                    ymax = mean_hatch + sterr),
+                position = position_dodge(width = .9), width = 0.2) + 
+  geom_jitter(data = h_c2,
+              aes(x = treatment,
+                  y = hatchingpercent),
+              position = position_dodge(width = .9)) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 15),
+        legend.text.align = 0,
+        text = element_text(size = 15),
+        axis.text.x = element_text(size = 8,
+                                   angle = 45,
+                                   hjust = 1)) +
+  labs(y = "% hatch", x = "") +
+  scale_y_continuous(limits = c(-5.5, 85), breaks = seq(0, 100, by = 10)) + 
+  scale_x_discrete(labels = c("TRE low solA", 
+                              "TRE + atropine 2.5 mM",
+                              "TRE + LY294002 500\U03BCM",
+                              "TRE + Akt inhibitor IV 50 \U03BCM",
+                              "TRE + ketoconazole 100 \U03BCM",
+                              "TRE + dafadine 50 \U03BCM"))
+p2
+
+```
+And figure c
+
+```{r figC, fig.width = 3, fig.height = 5, message = FALSE, warning = FALSE}
+
+h_c3 <- hatch_calc(input = "input/fig2B_TRDhsolA_rawdata.csv")
+h_s3 <- hatch_summ(input = "input/fig2B_TRDhsolA_rawdata.csv")
+
+h_c3$treatment <- factor(h_c3$treatment, levels = c("TRD_hsolA",
+                                                    "atrop_2500_TRD_hsolA",
+                                                    "Ly500",
+                                                    "Akt50",
+                                                    "ketoc100",
+                                                    "dafa50"), ordered = TRUE)
+h_c3 <- h_c3[order(h_c3$treatment),]
+h_s3$treatment <- factor(h_s3$treatment, levels = c("TRD_hsolA",
+                                                    "atrop_2500_TRD_hsolA",
+                                                    "Ly500",
+                                                    "Akt50",
+                                                    "ketoc100",
+                                                    "dafa50"), ordered = TRUE)
+h_s3 <- h_s3[order(h_s3$treatment),]
+
+
+p3 <- ggplot(data = h_s3, aes(x = treatment, y = mean_hatch)) +
+  geom_bar(position = "dodge",
+           stat = "identity",
+           color = "black",
+           fill = "lightgrey") +
+  geom_errorbar(aes(x = treatment,
+                    y = mean_hatch,
+                    ymin = mean_hatch - sterr,
+                    ymax = mean_hatch + sterr),
+                position = position_dodge(width = .9), width = 0.2) + 
+  geom_jitter(data = h_c3,
+              aes(x = treatment,
+                  y = hatchingpercent),
+              position = position_dodge(width = .9)) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 15),
+        legend.text.align = 0,
+        text = element_text(size = 15),
+        axis.text.x = element_text(size = 8,
+                                   angle = 45,
+                                   hjust = 1)) +
+  labs(y = "% hatch", x = "") +
+  scale_y_continuous(limits = c(-5.5, 95), breaks = seq(0, 100, by = 10)) + 
+  scale_x_discrete(labels = c("TRE high solA", 
+                              "TRE + atropine 2.5 mM",
+                              "TRE + LY294002 500\U03BCM",
+                              "TRE + Akt inhibitor IV 50 \U03BCM",
+                              "TRE + ketoconazole 100 \U03BCM",
+                              "TRE + dafadine 50 \U03BCM"))
+p3
+```
+
+
+Figure D:
+
+```{r figD, fig.width = 3, fig.height = 5, message = FALSE, warning = FALSE}
+
+h_c4 <- hatch_calc(input = "input/fig3_rawdata.csv")
+h_s4 <- hatch_summ(input = "input/fig3_rawdata.csv")
+
+h_c4$treatment <- factor(h_c4$treatment, levels = c("8cG_1mM",
+                                                    "8brc1_atrop2.5",
+                                                    "8cG_1mM_LY500uM",
+                                                    "8cG_1mM_ktc500uM",
+                                                    "8cG_1mM_dfd50uM"), ordered = TRUE)
+h_c4 <- h_c4[order(h_c4$treatment),]
+h_s4$treatment <- factor(h_s4$treatment, levels = c("8cG_1mM",
+                                                    "8brc1_atrop2.5",
+                                                    "8cG_1mM_LY500uM",
+                                                    "8cG_1mM_ktc500uM",
+                                                    "8cG_1mM_dfd50uM"), ordered = TRUE)
+h_s4 <- h_s4[order(h_s4$treatment),]
+
+
+p4 <- ggplot(data = h_s4, aes(x = treatment, y = mean_hatch)) +
+  geom_bar(position = "dodge",
+           stat = "identity",
+           color = "black",
+           fill = "lightgrey") +
+  geom_errorbar(aes(x = treatment,
+                    y = mean_hatch,
+                    ymin = mean_hatch - sterr,
+                    ymax = mean_hatch + sterr),
+                position = position_dodge(width = .9), width = 0.2) + 
+  geom_jitter(data = h_c4,
+              aes(x = treatment,
+                  y = hatchingpercent),
+              position = position_dodge(width = .9)) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 15),
+        legend.text.align = 0,
+        text = element_text(size = 15),
+        axis.text.x = element_text(size = 8,
+                                   angle = 45,
+                                   hjust = 1)) +
+  labs(y = "% hatch", x = "") +
+  scale_y_continuous(limits = c(-5.5, 65), breaks = seq(0, 100, by = 10)) +
+  scale_x_discrete(labels = c("8-Br-cGMP 1mM", 
+                              "8-Br-cGMP + atropine 2.5 mM",
+                              "8-Br-cGMP + LY294002 500\U03BCM",
+                              "8-Br-cGMP + ketoconazole 500 \U03BCM",
+                              "8-Br-cGMP + dafadine 50 \U03BCM"))
+p4
+```
+
+Assemble plots:
+
+```{r assemble, fig.width = 7, fig.height = 9}
+library(patchwork)
+
+p4 + p1 + p2 + p3 +  
+  plot_annotation(tag_levels = 'A') & 
+  theme(plot.tag = element_text(size = 15))
+```
+

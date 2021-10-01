@@ -1,0 +1,131 @@
+---
+title: "FigureS3"
+author: "Lieke Vlaar"
+date: "01/10/2021"
+output: html_document
+---
+
+Initiate the necessary libraries:
+
+```{r, message = FALSE, warning = FALSE}
+library(ggpmisc)
+library(extrafont)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(plotrix)
+```
+
+Load the necessary functions:
+
+```{r, message = FALSE, warning = FALSE}
+source("scripts/hatch_calc.R")
+source("scripts/hatch_summ.R")
+```
+
+Concentrations of DA plot
+
+## solA + DA plot
+
+```{r DA, fig.width = 3, fig.height = 4, message = FALSE, warning = FALSE}
+#supplemental figure ke_solA
+
+DA_c_solA <- hatch_calc(input = "input/DA_solA.csv")
+DA_s_solA <- hatch_summ(input = "input/DA_solA.csv")
+DA1_c <- DA_c_solA[DA_c_solA$treatment %in% c("d4da_100nM",
+                                              "d4da_10uM",
+                                              "DA0.01uM",
+                                              "DA0.1uM",
+                                              "DA1uM",
+                                              "DA10uM"),] 
+DA1_s <- DA_s_solA[DA_s_solA$treatment %in% c("d4da_100nM",
+                                              "d4da_10uM",
+                                              "DA0.01uM",
+                                              "DA0.1uM",
+                                              "DA1uM",
+                                              "DA10uM"),]
+DA1_s$treatment <- factor(DA1_s$treatment, levels = c("DA0.01uM",
+                                                      "DA0.1uM",
+                                                      "DA1uM",
+                                                      "DA10uM",
+                                                      "d4da_100nM",
+                                                      "d4da_10uM"), ordered = TRUE)
+DA1_s <- DA1_s[order(DA1_s$treatment),]
+DA1_c$treatment <- factor(DA1_c$treatment, levels = c("DA0.01uM",
+                                                      "DA0.1uM",
+                                                      "DA1uM",
+                                                      "DA10uM",
+                                                      "d4da_100nM",
+                                                      "d4da_10uM"), ordered = TRUE)
+DA1_c <- DA1_c[order(DA1_c$treatment),]
+f_DA1 <- range(DA1_c, DA1_s)
+f_DA1 <- f_DA1 + scale_x_discrete(labels = c(expression(Delta*"7-DA 1\U03BCM"),
+                                             expression(Delta*"7-DA 10\U03BCM"),
+                                             expression(Delta*"7-DA 0.1\U03BCM"),
+                                             expression(Delta*"7-DA 10\U03BCM"),
+                                             expression(Delta*"4-DA 0.1\U03BCM"),
+                                             expression(Delta*"4-DA 10\U03BCM")
+                                             ))
+f_DA1
+p4 + p1 + p2 + p3 + f_DA1 + plot_layout(ncol = 1) +
+  plot_annotation(tag_levels = 'A') & 
+  theme(plot.tag = element_text(size = 15))
+  
+f_DA1
+```
+
+
+Inhibition of hatching of G. pallida
+
+```{r figE, fig.width = 5, fig.height = 5, message = FALSE, warning = FALSE}
+
+h_c5 <- hatch_calc(input = "input/210511_inhstim_Gpa.csv")
+h_s5 <- hatch_summ(input = "input/210511_inhstim_Gpa.csv")
+
+h_c5$treatment <- factor(h_c5$treatment, levels = c("solA500pM",
+                                                    "solA500pM_20uMdafa",
+                                                    "solA500pM_50uMdafa",
+                                                    "solA500pM_100uMdafa",
+                                                    "twater"), ordered = TRUE)
+h_c5 <- h_c5[order(h_c5$treatment),]
+h_s5$treatment <- factor(h_s5$treatment, levels = c("solA500pM",
+                                                    "solA500pM_20uMdafa",
+                                                    "solA500pM_50uMdafa",
+                                                    "solA500pM_100uMdafa",
+                                                    "twater"), ordered = TRUE)
+h_s5 <- h_s5[order(h_s5$treatment),]
+
+
+p5 <- ggplot(data = h_s5, aes(x = treatment, y = mean_hatch)) +
+  geom_bar(position = "dodge",
+           stat = "identity",
+           color = "black",
+           fill = "lightgrey") +
+  geom_errorbar(aes(x = treatment,
+                    y = mean_hatch,
+                    ymin = mean_hatch - stdev,
+                    ymax = mean_hatch + stdev),
+                position = position_dodge(width = .9), width = 0.2) + 
+  geom_jitter(data = h_c5,
+              aes(x = treatment,
+                  y = hatchingpercent),
+              position = position_dodge(width = .9)) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 15),
+        legend.text.align = 0,
+        text = element_text(size = 15),
+        axis.text.x = element_text(size = 8,
+                                   angle = 45,
+                                   hjust = 1)) +
+  labs(y = "% hatch", x = "") +
+  scale_y_continuous(limits = c(-5, 60), breaks = seq(0, 100, by = 10)) +
+  scale_x_discrete(labels = c("solA500pM" = "solA 0.5nm",
+                              "solA500pM_20uMdafa" = "solA + dafadine 20\U03BCM",
+                              "solA500pM_50uMdafa" = "solA + dafadine 50\U03BCM",
+                              "solA500pM_100uMdafa" = "solA + dafadine 100\U03BCM",
+                              "twater" = "tap water"))
+p5 + (f_DA1 + scale_y_continuous(limits = c(-5, 60), breaks = seq(0, 100, by = 10))) + 
+  plot_annotation(tag_levels = 'A') & 
+  theme(plot.tag = element_text(size = 15))
+```
+

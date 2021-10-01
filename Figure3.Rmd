@@ -1,0 +1,175 @@
+---
+title: "Figure3"
+author: "Lieke Vlaar"
+date: "01/10/2021"
+output: html_document
+---
+
+Initiate the necessary libraries:
+
+```{r, message = FALSE, warning = FALSE}
+library(ggpmisc)
+library(extrafont)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(plotrix)
+```
+
+Load the necessary functions:
+
+```{r, message = FALSE, warning = FALSE}
+source("scripts/hatch_calc.R")
+source("scripts/hatch_summ.R")
+```
+
+
+Instead, make a hatching matrix for better overview:
+
+```{r matrix, fig.height = 7, fig.width = 4}
+m1 <- hatch_calc(input = "input/fig_matrix.csv")
+m2 <- hatch_summ2(input = "input/fig_matrix.csv")
+
+m2$inhibitor <- factor(m2$inhibitor, levels = c("none",
+                                                "atropine",
+                                                "LY294,002",
+                                                "AktinhIV",
+                                                "ketoconazole",
+                                                "dafadine"), ordered = TRUE)
+m2 <- m2[order(m2$inhibitor),]
+m1$inhibitor <- factor(m1$inhibitor, levels = c("none",
+                                                "atropine",
+                                                "LY294,002",
+                                                "AktinhIV",
+                                                "ketoconazole",
+                                                "dafadine"), ordered = TRUE)
+m1 <- m1[order(m1$inhibitor),]
+
+data = data.frame(inhibitor=c("none",
+                              "atropine",
+                              "LY294,002",
+                              "AktinhIV",
+                              "ketoconazole",
+                              "dafadine"), mean_hatch = rep(75, 6), lab = c("",
+                                                                            "",
+                                                                            "",
+                                                                            "",
+                                                                            "#",
+                                                                            ""), stimulator = "8Br-cGMP_1mM")
+data$inhibitor <- factor(data$inhibitor, levels = c("none",
+                                                "atropine",
+                                                "LY294,002",
+                                                "AktinhIV",
+                                                "ketoconazole",
+                                                "dafadine"), ordered = TRUE)
+data <- data[order(data$inhibitor),]
+
+# the required red star in 8Br-cGMP_1mM combined with ketoconazole is because this concentration is different than all the other ketoconazole concentrations in the plot
+
+fig4a <- ggplot(data = m2, aes(x = inhibitor, y = mean_hatch)) +
+  geom_bar(stat = "identity",
+           color = "black",
+           fill = "lightgray") +
+  geom_errorbar(aes(x = inhibitor,
+                    y = mean_hatch,
+                    ymin = mean_hatch - stdev,
+                    ymax = mean_hatch + stdev),
+                width = 0.2) +
+  geom_jitter(data = m1,
+              aes(x = inhibitor,
+                  y = hatchingpercent),
+              width = 0.2) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        strip.text.x = element_text(angle = 90),
+        strip.text.y = element_text(angle = 90),
+        legend.position = "none") +
+  facet_grid(stimulator ~ inhibitor, scales = "free_x", space = "free") +
+  labs(y = "% hatch", x = "")+
+  geom_text(data = data, 
+            aes(label = lab), 
+            colour = "gray34",
+            size = 5) +
+  scale_x_discrete(breaks = NULL) +
+  scale_y_continuous(breaks=c(0,20,40,60,80))
+fig4a
+```
+
+Do statistical analysis and add it to the plot:
+
+```{r statist}
+brcgmp <- m1[m1$stimulator == "8Br-cGMP_1mM", ]
+solA <- m1[m1$stimulator == "solA_5nM",]
+TRDh <- m1[m1$stimulator == "TRD_hsolA",]
+TRDl <- m1[m1$stimulator == "TRD_lsolA",]
+
+anova_b <- TukeyHSD(aov(hatchingpercent ~ treatment, data = brcgmp))
+anova_b
+anova_s <- TukeyHSD(aov(hatchingpercent ~ treatment, data = solA))
+anova_s
+anova_th <- TukeyHSD(aov(hatchingpercent ~ treatment, data = TRDh)) 
+anova_th
+anova_tl <- TukeyHSD(aov(hatchingpercent ~ treatment, data = TRDl))
+anova_tl
+
+
+```
+
+
+```{r addstattofig4, fig.height = 7, fig.width = 4}
+data2 <- data.frame(inhibitor = c("atropine",
+                                  "dafadine",
+                                  "ketoconazole",
+                                  "LY294,002",
+                                  "AktinhIV",
+                                  "atropine",
+                                  "dafadine",
+                                  "ketoconazole",
+                                  "LY294,002",
+                                  "AktinhIV",
+                                  "atropine",
+                                  "dafadine",
+                                  "ketoconazole",
+                                  "LY294,002",
+                                  "AktinhIV",
+                                  "atropine",
+                                  "dafadine",
+                                  "ketoconazole",
+                                  "LY294,002"),
+                    mean_hatch = c(rep(50, 9), rep(75, 10)),
+                    lab = c("*",
+                            "***",
+                            "***",
+                            "*",
+                            "***",
+                            "***",
+                            "**",
+                            "***",
+                            "***",
+                            "***",
+                            "***",
+                            "**",
+                            "***",
+                            "***",
+                            "***",
+                            "***",
+                            "**",
+                            "***",
+                            "*"),
+                    stimulator = c(rep("8Br-cGMP_1mM", 4),
+                                   rep("solA_5nM", 5),
+                                   rep("TRD_hsolA", 5),
+                                   rep("TRD_lsolA", 5)))
+data2$inhibitor <- factor(data2$inhibitor, levels = c("none",
+                                                      "atropine",
+                                                      "LY294,002",
+                                                      "AktinhIV",
+                                                      "ketoconazole",
+                                                      "dafadine"), ordered = TRUE)
+data2 <- data2[order(data2$inhibitor),]
+fig4 <- fig4a + geom_text(data = data2, 
+                         aes(label = lab), 
+                         colour = "black",
+                         size = 4)
+fig4
+```
