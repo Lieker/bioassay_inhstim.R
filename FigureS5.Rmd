@@ -1,0 +1,233 @@
+---
+title: "Figure S5"
+author: "Lieke Vlaar"
+date: "05/10/2021"
+output: html_document
+---
+Initiate the necessary libraries:
+
+```{r, message = FALSE, warning = FALSE}
+library(ggpmisc)
+library(extrafont)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+library(plotrix)
+```
+
+Load the necessary functions:
+
+```{r, message = FALSE, warning = FALSE}
+source("scripts/hatch_calc.R")
+source("scripts/hatch_summ.R")
+```
+
+## Atropine
+
+All other, supplementary, plots, showing what was tried
+
+atropine, first get overview of everything sorted by date:
+
+```{r atrop1, fig.width = 10, fig.height = 7, message = FALSE, warning = FALSE}
+atrop_c <- hatch_calc(input = "input/combined_per_treatment_atropine.csv")
+atrop_s <- hatch_summ1(input = "input/combined_per_treatment_atropine.csv")
+
+source("scripts/overviewplot.R")
+
+p_atrop <- overview(atrop_c, atrop_s)
+
+p_atrop
+
+#make overview separately for solA, TRDh, TRDl
+
+atrop_c_solA <- atrop_c[grep("TRD|PRE|8c|PRD|8b", atrop_c$treatment, ignore.case = T, invert = T),]
+atrop_s_solA <- atrop_s[grep("TRD|PRE|8c|PRD|8b", atrop_s$treatment, ignore.case = T, invert = T),]
+
+p_atrop2 <- overview(atrop_c_solA, atrop_s_solA)
+p_atrop2
+
+atrop_c_TRDl <- atrop_c[grep("TRD_l", atrop_c$treatment, ignore.case = T),]
+atrop_s_TRDl <- atrop_s[grep("TRD_l", atrop_s$treatment, ignore.case = T),]
+
+p_atrop3 <- overview(atrop_c_TRDl, atrop_s_TRDl)
+p_atrop3
+
+atrop_c_TRDh <- atrop_c[grep("TRD_h", atrop_c$treatment, ignore.case = T),]
+atrop_s_TRDh <- atrop_s[grep("TRD_h", atrop_s$treatment, ignore.case = T),]
+
+p_atrop3 <- overview(atrop_c_TRDh, atrop_s_TRDh)
+p_atrop3
+```
+
+Then filter on what to show (manually by making a new .csv file) and make supplemental figure plot:
+
+```{r atrop2, fig.width = (5/12*11), fig.height = 3.5, message = FALSE, warning = FALSE}
+atropc4 <- hatch_calc(input = "input/atropine_figs4.csv")
+atrops4 <- hatch_summ3(input = "input/atropine_figs4.csv")
+
+source("scripts/plot_grid_s4.R")
+
+S4B <- plotgrid(c = atropc4, s = atrops4)
+S4B + theme(axis.title.x = element_text(size = 10)) + xlab("atropine conc (mM)")
+```
+
+## 8Br-cGMP
+
+```{r 8br, fig.width = (5/12*4), fig.height = 3.5, message = FALSE, warning = FALSE}
+br8_c <- hatch_calc(input = "input/combined_per_treatment_8bcGMP.csv")
+br8_s <- hatch_summ1(input = "input/combined_per_treatment_8bcGMP.csv")
+p_br8 <- overview(br8_c, br8_s, xf = 50)
+p_br8
+
+#make final figure
+bcg_c <- hatch_calc(input = "input/8bg.csv")
+bcg_s <- hatch_summ4(input = "input/8bg.csv")
+S4A <- plotgrid(bcg_c, bcg_s) + scale_x_discrete(labels = c("8Br-cGMP 0.2 mM",
+                                                           "8Br-cGMP 1.0 mM",
+                                                           "8Br-cGMP 2.5 mM",
+                                                           "8Br-cGMP 5.0 mM"))
+S4A
+```
+
+
+
+
+## Akt inhibitor IV
+
+```{r akt1, fig.width = 10, fig.height = 7, message = FALSE, warning = FALSE}
+akt_c <- hatch_calc(input = "input/combined_per_treatment_AktinhibitorIV.csv")
+akt_s <- hatch_summ1(input = "input/combined_per_treatment_AktinhibitorIV.csv")
+p_akt <- overview(akt_c, akt_s, xf = 1)
+p_akt
+
+#make separate overviews for solA, TRD_l and TRD_h
+
+akt_c_solA <- akt_c[grep("TRD|PRE|8c|PRD|8b", akt_c$treatment, ignore.case = T, invert = T),]
+akt_s_solA <- akt_s[grep("TRD|PRE|8c|PRD|8b", akt_s$treatment, ignore.case = T, invert = T),]
+
+p_akt2 <- overview(akt_c_solA, akt_s_solA, xf = 1)
+p_akt2
+
+akt_c_TRDl <- akt_c[grep("TRD_l", akt_c$treatment, ignore.case = T),]
+akt_s_TRDl <- akt_s[grep("TRD_l", akt_s$treatment, ignore.case = T),]
+
+p_akt3 <- overview(akt_c_TRDl, akt_s_TRDl, xf = 1)
+p_akt3
+
+akt_c_TRDh <- akt_c[grep("TRD_h", akt_c$treatment, ignore.case = T),]
+akt_s_TRDh <- akt_s[grep("TRD_h", akt_s$treatment, ignore.case = T),]
+
+p_akt4 <- overview(akt_c_TRDh, akt_s_TRDh, xf = 1)
+p_akt4
+
+```
+
+```{r akt2, fig.width = (5/12*13), fig.height = 3.5, message = FALSE, warning = FALSE}
+aktiivc4 <- hatch_calc(input = "input/aktinhiv_figs4.csv")
+aktiivs4 <- hatch_summ3(input = "input/aktinhiv_figs4.csv")
+
+aktiivc4$conc_inh <- factor(aktiivc4$conc_inh, levels = c("0uM","10uM","25uM","50uM","100uM"), ordered = TRUE)
+aktiivc4 <- aktiivc4[order(aktiivc4$conc_inh),]
+aktiivs4$conc_inh <- factor(aktiivs4$conc_inh, 
+                            levels = c("0uM","10uM","25uM","50uM","100uM"), 
+                            ordered = TRUE)
+aktiivs4 <- aktiivs4[order(aktiivs4$conc_inh),]
+
+S4C <- plotgrid(c = aktiivc4, s = aktiivs4)
+S4C + theme(axis.title.x = element_text(size = 10)) + xlab("Akt inh IV conc (uM)")
+```
+
+## LY294002
+
+```{r ly1, fig.width = 10, fig.height = 7, message = FALSE, warning = FALSE}
+ly_c <- hatch_calc(input = "input/combined_per_treatment_LY294002.csv")
+ly_s <- hatch_summ1(input = "input/combined_per_treatment_LY294002.csv")
+p_ly <- overview(ly_c, ly_s, xf = 1)
+p_ly
+
+#make separate overviews for solA, TRD_l and TRD_h
+
+ly_c_solA <- ly_c[grep("TRD|PRE|8c|PRD|8b", ly_c$treatment, ignore.case = T, invert = T),]
+ly_s_solA <- ly_s[grep("TRD|PRE|8c|PRD|8b", ly_s$treatment, ignore.case = T, invert = T),]
+
+p_ly2 <- overview(ly_c_solA, ly_s_solA, xf = 1)
+p_ly2
+
+ly_c_TRDl <- ly_c[grep("TRD_l", ly_c$treatment, ignore.case = T),]
+ly_s_TRDl <- ly_s[grep("TRD_l", ly_s$treatment, ignore.case = T),]
+
+p_ly3 <- overview(ly_c_TRDl, ly_s_TRDl, xf = 1)
+p_ly3
+
+ly_c_TRDh <- ly_c[grep("TRD_h", ly_c$treatment, ignore.case = T),]
+ly_s_TRDh <- ly_s[grep("TRD_h", ly_s$treatment, ignore.case = T),]
+
+p_ly4 <- overview(ly_c_TRDh, ly_s_TRDh, xf = 1)
+p_ly4
+#since only undiluted RE are relevant, no ranges for TRD for LY
+```
+
+
+```{r ly2, fig.width = (5/12*3.5), fig.height = 3.5, message = FALSE, warning = FALSE}
+lyc4 <- hatch_calc(input = "input/ly_figs4.csv")
+lys4 <- hatch_summ3(input = "input/ly_figs4.csv")
+
+lyc4$conc_inh <- factor(lyc4$conc_inh, levels = c("0uM", "50uM", "500uM"), ordered = TRUE)
+lyc4 <- lyc4[order(lyc4$conc_inh),]
+lys4$conc_inh <- factor(lys4$conc_inh, levels = c("0uM", "50uM", "500uM"), ordered = TRUE)
+lys4 <- lys4[order(lys4$conc_inh),]
+
+S4D <- plotgrid(c = lyc4, s = lys4)
+S4D + theme(axis.title.x = element_text(size = 10, hjust = 1)) + xlab("LY294,002 conc. (uM)")
+```
+
+
+## Ketoconazole
+
+```{r ket1, fig.width = 10, fig.height = 7, message = FALSE, warning = FALSE}
+ke_c <- hatch_calc(input = "input/combined_per_treatment_ketoconazole.csv")
+ke_s <- hatch_summ1(input = "input/combined_per_treatment_ketoconazole.csv")
+p_ke <- overview(ke_c, ke_s, xf = 5)
+p_ke
+
+#make separate overviews for solA, TRD_l and TRD_h
+
+ke_c_solA <- ke_c[grep("TRD|PRE|8c|PRD|8b", ke_c$treatment, ignore.case = T, invert = T),]
+ke_s_solA <- ke_s[grep("TRD|PRE|8c|PRD|8b", ke_s$treatment, ignore.case = T, invert = T),]
+
+p_ke2 <- overview(ke_c_solA, ke_s_solA, xf = 5)
+p_ke2
+
+ke_c_TRDl <- ke_c[grep("TRD_l", ke_c$treatment, ignore.case = T),]
+ke_s_TRDl <- ke_s[grep("TRD_l", ke_s$treatment, ignore.case = T),]
+
+p_ke3 <- overview(ke_c_TRDl, ke_s_TRDl, xf = 5)
+p_ke3
+
+ke_c_TRDh <- ke_c[grep("TRD_h", ke_c$treatment, ignore.case = T),]
+ke_s_TRDh <- ke_s[grep("TRD_h", ke_s$treatment, ignore.case = T),]
+
+p_ke4 <- overview(ke_c_TRDh, ke_s_TRDh, xf = 5)
+p_ke4
+
+```
+
+```{r ket2, fig.width = (5/12*9), fig.height = 3.5, message = FALSE, warning = FALSE}
+kec4 <- hatch_calc(input = "input/ketoconazole_figs4.csv")
+kes4 <- hatch_summ3(input = "input/ketoconazole_figs4.csv")
+
+S4E <- plotgrid(c = kec4, s = kes4)
+S4E + theme(axis.title.x = element_text(size = 10)) + xlab("ketoconazole conc. (uM)")
+```
+
+
+## Dafadine
+
+```{r dafa1, fig.width = 10, fig.height = 7, message = FALSE, warning = FALSE}
+dafa_c <- hatch_calc(input = "input/combined_per_treatment_dafadine.csv")
+dafa_s <- hatch_summ1(input = "input/combined_per_treatment_dafadine.csv")
+p_dafa <- overview(dafa_c, dafa_s, xf = 0.5)
+p_dafa
+```
+
+There is no data that is important to put in supplemental figure 4
